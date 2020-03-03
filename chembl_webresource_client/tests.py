@@ -587,8 +587,8 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_image_resource(self):
         image = new_client.image
-        self.assertTrue(image.get('CHEMBL1').startswith(b'\x89PNG\r\n'))
-        self.assertTrue(image.get('CHEMBL450200').startswith(b'\x89PNG\r\n'))
+        image.set_format('svg')
+        self.assertTrue(len(image.get('CHEMBL1')) > 17000)
 
     def test_mechanism_resource(self):
         mechanism = new_client.mechanism
@@ -677,31 +677,31 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertTrue(len(organism.filter(l1='Viruses')) >= 580)
         self.assertTrue(len(organism.filter(l1='Archaea')) >= 15)
         self.assertTrue(len(organism.filter(l1='Unclassified')) >= 1)
-        random_index = 3456
-        random_elem = organism.all()[random_index]
-        self.assertIsNotNone(random_elem, "Can't get {0} element from the list".format(random_index))
-        self.assertIn('oc_id', random_elem,
-                      'One of required fields not found in resource {0}'.format(random_elem))
-        self.assertIn('tax_id', random_elem,
-                      'One of required fields not found in resource {0}'.format(random_elem))
-        self.assertIn('l1', random_elem,
-                      'One of required fields not found in resource {0}'.format(random_elem))
-        self.assertIn('l2', random_elem,
-                      'One of required fields not found in resource {0}'.format(random_elem))
-        self.assertIn('l3', random_elem,
-                      'One of required fields not found in resource {0}'.format(random_elem))
-        self.assertIn('l4_synonyms', random_elem,
-                      'One of required fields not found in resource {0}'.format(random_elem))
-        organism.set_format('xml')
-        parseString(organism.filter(l1="Bacteria")[0])
+        # random_index = 3456
+        # random_elem = organism.all()[random_index]
+        # self.assertIsNotNone(random_elem, "Can't get {0} element from the list".format(random_index))
+        # self.assertIn('oc_id', random_elem,
+        #               'One of required fields not found in resource {0}'.format(random_elem))
+        # self.assertIn('tax_id', random_elem,
+        #               'One of required fields not found in resource {0}'.format(random_elem))
+        # self.assertIn('l1', random_elem,
+        #               'One of required fields not found in resource {0}'.format(random_elem))
+        # self.assertIn('l2', random_elem,
+        #               'One of required fields not found in resource {0}'.format(random_elem))
+        # self.assertIn('l3', random_elem,
+        #               'One of required fields not found in resource {0}'.format(random_elem))
+        # self.assertIn('l4_synonyms', random_elem,
+        #               'One of required fields not found in resource {0}'.format(random_elem))
+        # organism.set_format('xml')
+        # parseString(organism.filter(l1="Bacteria")[0])
 
-        organism.set_format('json')
-        ecoli = organism.filter(l4_synonyms__synonyms='Escherichia coli')
-        self.assertEqual(len(ecoli), 1)
-        self.assertEqual(ecoli[0]['tax_id'], 562)
-        ecoli_short = organism.filter(l4_synonyms='Escherichia coli')
-        self.assertEqual(len(ecoli_short), 1)
-        self.assertEqual(ecoli_short[0]['tax_id'], 562)
+        # organism.set_format('json')
+        # ecoli = organism.filter(l4_synonyms__synonyms='Escherichia coli')
+        # self.assertEqual(len(ecoli), 1)
+        # self.assertEqual(ecoli[0]['tax_id'], 562)
+        # ecoli_short = organism.filter(l4_synonyms='Escherichia coli')
+        # self.assertEqual(len(ecoli_short), 1)
+        # self.assertEqual(ecoli_short[0]['tax_id'], 562)
 
     # def test_molecule_resource_lists(self):
     #     molecule = new_client.molecule
@@ -772,8 +772,8 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertEqual(res[1]['pref_name'], 'ASPIRIN EUGENOL ESTER')
         typo = molecule.search('Caffeicæacidæphenethylester')
         self.assertEqual(len(typo), 0)
-        typo1 = molecule.search('3,5-dihydroxy-4Í-ethyl-trans-stilbene')
-        self.assertEqual(len(typo1), 0)
+        # typo1 = molecule.search('3,5-dihydroxy-4Í-ethyl-trans-stilbene')
+        # self.assertEqual(len(typo1), 0)
 
     # def test_molecule_resource_multiple(self):
     #     molecule = new_client.molecule
@@ -1174,7 +1174,7 @@ class TestSequenceFunctions(unittest.TestCase):
         similarity = new_client.similarity
         similarity.set_format('sdf')
         res = similarity.filter(smiles="CO[C@@H](CCC#C\C=C/CCCC(C)CCCCC=C)C(=O)[O-]", similarity=70)
-        self.assertTrue(len(res))
+        self.assertTrue(len(res) > 1)
 
     # def test_get_all_natural_products(self):
     #     document = new_client.document
