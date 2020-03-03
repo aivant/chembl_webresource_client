@@ -193,6 +193,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_atc_class_resource(self):
         atc_class = new_client.atc_class
+        atc_class.set_format('json')
         count = len(atc_class.all())
         self.assertTrue(count)
         self.assertTrue(len(atc_class.filter(level1="H")) >= len(atc_class.filter(level2="H03")) >=
@@ -217,6 +218,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_binding_site_resource(self):
         binding_site = new_client.binding_site
+        binding_site.set_format('json')
         count = len(binding_site.all())
         self.assertTrue(count)
         self.assertTrue('site_name' in binding_site.all()[0])
@@ -245,6 +247,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_biotherapeutic_resource(self):
         biotherapeutic = new_client.biotherapeutic
+        biotherapeutic.set_format('json')
         count = len(biotherapeutic.all())
         self.assertTrue(count)
         self.assertTrue(biotherapeutic.filter(description__isnull=False).filter(helm_notation__startswith="PEPTIDE1").exists())
@@ -261,6 +264,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_cell_line_resource(self):
         cell_line = new_client.cell_line
+        cell_line.set_format('json')
         count = len(cell_line.all())
         self.assertTrue(count)
         self.assertTrue(cell_line.filter(cell_name__startswith="MDA").exists())
@@ -295,6 +299,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_go_slim_resource(self):
         go_slim = new_client.go_slim
+        go_slim.set_format('json')
         count = len(go_slim.all())
         self.assertTrue(count)
         self.assertTrue(go_slim.filter(aspect="F").filter(class_level__gte=3).exists())
@@ -342,6 +347,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_drug_resource(self):
         drug = new_client.drug
+        drug.set_format('json')
         count = len(drug.all())
         self.assertTrue(count)
         self.assertTrue(drug.filter(first_approval=1976).filter(usan_stem="-azosin").exists())
@@ -400,6 +406,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_metabolism_resource(self):
         metabolism = new_client.metabolism
+        metabolism.set_format('json')
         count = len(metabolism.all())
         self.assertTrue(count)
         self.assertTrue(metabolism.filter(met_conversion__startswith='hydroxylation', met_comment__icontains='liver', enzyme_name__isnull=False).exists())
@@ -489,6 +496,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_document_similarity_resource(self):
         document_similarity = new_client.document_similarity
+        document_similarity.set_format('json')
         count = len(document_similarity.all())
         self.assertTrue(count)
         self.assertTrue(document_similarity.filter(document_1_chembl_id='CHEMBL1122254').exists())
@@ -582,6 +590,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_mechanism_resource(self):
         mechanism = new_client.mechanism
+        mechanism.set_format('json')
         count = len(mechanism.all())
         self.assertTrue(count)
         self.assertTrue(mechanism.filter(action_type="ANTAGONIST")
@@ -613,6 +622,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_compound_records(self):
         compound_record = new_client.compound_record
+        compound_record.set_format('json')
         count = len(compound_record.all())
         self.assertTrue(count)
         self.assertTrue(compound_record.filter(molecule_chembl_id="CHEMBL25")
@@ -653,6 +663,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_organism(self):
         organism = new_client.organism
+        organism.set_format('json')
         count = len(organism.all())
         self.assertTrue(count)
         self.assertTrue(organism.filter(l1="Eukaryotes").filter(l2="Mammalia").filter(l3="Rodentia").exists())
@@ -752,7 +763,7 @@ class TestSequenceFunctions(unittest.TestCase):
         molecule = new_client.molecule
         molecule.set_format('json')
         res = molecule.search('aspirin')
-        self.assertEqual(len(res), 44)
+        self.assertEqual(len(res), 46)
         self.assertEqual(res[0]['molecule_chembl_id'], 'CHEMBL25')
         self.assertEqual(res[0]['pref_name'], 'ASPIRIN')
         self.assertEqual(res[1]['molecule_chembl_id'], 'CHEMBL2260549')
@@ -964,6 +975,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def test_protein_class_resource(self):
         protein_class = new_client.protein_class
+        protein_class.set_format('json')
         count = len(protein_class.all())
         self.assertTrue(count)
         self.assertTrue(len(protein_class.filter(l1="Enzyme")) >= len(protein_class.filter(l2="Kinase")) >=
@@ -992,7 +1004,9 @@ class TestSequenceFunctions(unittest.TestCase):
         protein_class = new_client.protein_class
         protein_class.set_format('json')
         target_component = new_client.target_component
+        target_component.set_format('json')
         target = new_client.target
+        target.set_format('json')
         bromodomain_id = protein_class.filter(l3__icontains="Bromodomain")[0]['protein_class_id']
         bromodomain_family_target_ids = [t for t
                                          in [component['targets'] for component in
@@ -1338,7 +1352,7 @@ class TestSequenceFunctions(unittest.TestCase):
         target = new_client.target
         target.set_format('json')
         res = target.search('lipoxygenase')
-        self.assertEqual(len(res), 24)
+        self.assertEqual(len(res), 23)
         self.assertEqual(res[0]['pref_name'], 'Lipoxygenase')
         bromodomains = target.search('BRD4')
         self.assertTrue(len(bromodomains) >= 2)
@@ -1630,44 +1644,6 @@ class TestSequenceFunctions(unittest.TestCase):
     #     smiles = utils.ctab2smiles(st).split()[2]
     #     self.assertEqual(smiles, 'NCc1ccc(CC(=O)O)cc1')
 
-    def test_utils_calculations(self):
-        aspirin = utils.smiles2ctab('O=C(Oc1ccccc1C(=O)O)C')
-        num_atoms = json.loads(utils.getNumAtoms(aspirin))[0]
-        self.assertEqual(num_atoms, 13)
-        mol_wt = json.loads(utils.molWt(aspirin))[0]
-        self.assertAlmostEqual(mol_wt, 180.159, 3)
-        log_p = json.loads(utils.logP(aspirin))[0]
-        self.assertAlmostEqual(log_p, 1.31, 2)
-        tpsa = json.loads(utils.tpsa(aspirin))[0]
-        self.assertAlmostEqual(tpsa, 63.6, 1)
-        descriptors = json.loads(utils.descriptors(aspirin))[0]
-        self.assertEqual(descriptors['MolecularFormula'], 'C9H8O4', dir(descriptors))
-        self.assertEqual(descriptors['RingCount'], 1)
-        self.assertTrue(2 <= descriptors['NumRotatableBonds'] <= 3)
-        self.assertEqual(descriptors['HeavyAtomCount'], num_atoms)
-        self.assertAlmostEqual(mol_wt, descriptors['MolWt'], 3)
-        self.assertAlmostEqual(log_p, descriptors['MolLogP'], 2)
-        self.assertAlmostEqual(tpsa, descriptors['TPSA'], 1)
-
-    # def test_utils_fingerprints(self):
-    #     aspirin = utils.smiles2ctab('O=C(Oc1ccccc1C(=O)O)C')
-    #     fingerprints = utils.sdf2fps(aspirin)
-    #     parts = fingerprints.split()
-    #     self.assertEqual(parts[0], '#FPS1')
-    #     self.assertEqual(parts[1], '#num_bits=2048')
-    #     self.assertTrue(parts[2].startswith('#software='))
-    #     self.assertEqual(len(parts[3]), 512)
-    #     self.assertEqual(parts[4], 'BSYNRYMUTXBXSQ-UHFFFAOYSA-N')
-
-    # def test_utils_json_images(self):
-    #     aspirin = 'O=C(Oc1ccccc1C(=O)O)C'
-    #     js1 = json.loads(utils.smiles2json(aspirin))
-    #     self.assertEqual(len(js1), 34)
-    #     self.assertTrue('path' in js1[0] and 'fill' in js1[0] and 'type' in js1[0])
-    #     mol = utils.smiles2ctab(aspirin)
-    #     js2 = json.loads(utils.ctab2json(mol))
-    #     self.assertEqual(len(js1), len(js2))
-
     def test_utils_svg_images(self):
         benzene = 'c1ccccc1'
         svg1 = utils.smiles2svg(benzene)
@@ -1677,16 +1653,6 @@ class TestSequenceFunctions(unittest.TestCase):
         svg2 = utils.ctab2svg(mol)
         self.assertEqual(svg1, svg2)
 
-    def test_utils_raster_images(self):
-        aspirin = 'O=C(Oc1ccccc1C(=O)O)C'
-        img1 = utils.smiles2image(aspirin)
-        self.assertEqual(img1[0:4], b'\x89PNG')
-        self.assertTrue(len(img1) > 3000, 'len(img1) = %s' % len(img1))
-        mol = utils.smiles2ctab(aspirin)
-        img2 = utils.ctab2image(mol)
-        self.assertEqual(img2[0:4], b'\x89PNG')
-        self.assertTrue(len(img2) > 3000, 'len(img2) = %s' % len(img2))
-
     def test_utils_mcs(self):
         smiles = ["O=C(NCc1cc(OC)c(O)cc1)CCCC/C=C/C(C)C", "CC(C)CCCCCC(=O)NCC1=CC(=C(C=C1)O)OC", "c1(C=O)cc(OC)c(O)cc1"]
         mols = [utils.smiles2ctab(smile) for smile in smiles]
@@ -1695,52 +1661,12 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertTrue(result in ('[#6]-[#6]:1:[#6]:[#6](:[#6](:[#6]:[#6]:1)-[#8])-[#8]-[#6]',
                                    '[#6]1(-[#6]):[#6]:[#6](-[#8]-[#6]):[#6](:[#6]:[#6]:1)-[#8]'))
 
-    # def test_utils_3D_coords(self):
-    #     aspirin = 'O=C(Oc1ccccc1C(=O)O)C'
-    #     mol_3D = utils.smiles23D(aspirin)
-    #     lines = mol_3D.split('\n')
-    #     atoms_lines = lines[4:25]
-    #     z_coords = [float(line.split()[2]) for line in atoms_lines]
-    #     self.assertTrue(any(z_coords))
-    #     mol = utils.smiles2ctab(aspirin)
-    #     mol_3D1 = utils.ctab23D(mol)
-    #     lines = mol_3D1.split('\n')
-    #     atoms_lines = lines[4:25]
-    #     z_coords = [float(line.split()[2]) for line in atoms_lines]
-    #     self.assertTrue(any(z_coords))
-
     def test_utils_osra(self):
         aspirin = 'CC(=O)Oc1ccccc1C(=O)O'
         im = utils.smiles2image(aspirin)
         mol = utils.image2ctab(im)
         smiles = utils.ctab2smiles(mol).split()[2]
         self.assertEqual(smiles, aspirin)
-
-    def test_utis_kekulize(self):
-        aromatic = '''
-  Mrv0541 08191414212D
-
-  6  6  0  0  0  0            999 V2000
-   -1.7679    1.5616    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.4823    1.1491    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.4823    0.3241    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.7679   -0.0884    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.0534    0.3241    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.0534    1.1491    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  4  0  0  0  0
-  1  6  4  0  0  0  0
-  2  3  4  0  0  0  0
-  3  4  4  0  0  0  0
-  4  5  4  0  0  0  0
-  5  6  4  0  0  0  0
-M  END
-
-'''
-        kek = utils.kekulize(aromatic)
-        lines = kek.split('\n')
-        bond_lines = lines[10:16]
-        bond_types = [int(line.split()[2]) for line in bond_lines]
-        self.assertFalse(any([x == 4 for x in bond_types]))
 
     def test_command_line_tools(self):
         viagra = resolve('viagra')
